@@ -6,10 +6,13 @@ if not find_dotenv():
 else:
     load_dotenv()
 
-BOT_TOKEN = os.getenv("7110090587:AAHlTBPP8-4mKgKp51c-1_H11yb11Jur380")
-RAPID_API_KEY = os.getenv("dict.1.1.20240321T090041Z.519173ee60c3f4cf.b43ee96f7a8f34a004a676af50a9f778ceb1f1e8")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+RAPID_API_KEY = os.getenv("RAPID_API_KEY")
 DEFAULT_COMMANDS = (
-    ("start", "Запустить бота"),
-    ("help", "Вывести справку"),
-    ("hello world", "Привет, я-бот. Чем могу помочь?")
+    ('start', 'Начать работу с ботом'),
+    ('help', 'Получить помощь'),
+    ('low', 'Получить минимальные значения'),
+    ('high', 'Получить максимальные значения'),
+    ('custom', 'Получить значения по пользовательскому диапазону'),
+    ('history', 'Получить историю запросов'),
 )
