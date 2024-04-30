@@ -2,6 +2,23 @@ from telebot.types import Message
 from loader import bot
 import sqlite3
 
+
+def create_history_table():
+    conn = sqlite3.connect('history.db')
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS history (
+                      id INTEGER PRIMARY KEY,
+                      user_id INTEGER NOT NULL,
+                      command TEXT NOT NULL,
+                      arguments TEXT,
+                      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )''')
+    conn.commit()
+    conn.close()
+
+# Запускаем функцию создания таблицы перед использованием
+create_history_table()
+
 def get_user_history(user_id):
     conn = sqlite3.connect('history.db')
     cursor = conn.cursor()

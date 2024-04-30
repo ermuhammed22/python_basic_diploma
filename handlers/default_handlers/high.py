@@ -1,27 +1,32 @@
 from telebot.types import Message
-
-from handlers.default_handlers.low import save_request_to_history
 from loader import bot
-from handlers import api
-import sqlite3
+
+# Состояния для запроса аргументов
+ARGUMENT_SERVICE, ARGUMENT_QUANTITY = range(2)
 
 @bot.message_handler(commands=["high"])
 def high_command(message: Message):
+    msg = bot.reply_to(message, "Введите услугу/товар:")
+    bot.register_next_step_handler(msg, process_service_step)
+
+def process_service_step(message: Message):
     try:
-        args = message.text.split()[1:]
-        if len(args) != 2:
-            bot.reply_to(message, "Неверное количество аргументов. Используйте команду "
-                                  "/high <услуга/товар> <количество>")
-            return
-        service = args[0]
-        quantity = int(args[1])
+        chat_id = message.chat.id
+        service = message.text
 
-        highest_values = api.get_highest_values(service, quantity)
+        msg = bot.reply_to(message, "Введите количество:")
+        bot.register_next_step_handler(msg, process_quantity_step, service)
+    except Exception as e:
+        bot.reply_to(message, f"Произошла ошибка: {str(e)}")
 
-        bot.reply_to(message, f"Самые высокие значения для {service}: {highest_values}")
+def process_quantity_step(message: Message, service):
+    try:
+        chat_id = message.chat.id
+        quantity = int(message.text)
 
-        # Сохраняем запрос в историю
-        save_request_to_history(message.from_user.id, "/high", f"{service}, {quantity}")
+        # Дальнейшая обработка: запрос к API, отправка сообщения с результатом и т.д.
+
+        bot.reply_to(message, f"Вы запросили {quantity} максимальных значений для {service}")
 
     except Exception as e:
         bot.reply_to(message, f"Произошла ошибка: {str(e)}")

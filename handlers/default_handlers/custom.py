@@ -1,30 +1,42 @@
 from telebot.types import Message
-
-from handlers.default_handlers.low import save_request_to_history
 from loader import bot
-from handlers import api
-import sqlite3
+
+# Состояния для запроса аргументов
+ARGUMENT_SERVICE, ARGUMENT_RANGE, ARGUMENT_QUANTITY = range(3)
 
 @bot.message_handler(commands=["custom"])
 def custom_command(message: Message):
+    msg = bot.reply_to(message, "Введите услугу/товар:")
+    bot.register_next_step_handler(msg, process_service_step)
+
+def process_service_step(message: Message):
     try:
-        args = message.text.split()[1:]
-        if len(args) != 4:
-            bot.reply_to(message, "Неверное количество аргументов. Используйте команду "
-                                  "/custom <услуга/товар> <диапазон> <количество>")
-            return
-        service = args[0]
-        range_values = args[1]
-        quantity = int(args[2])
+        chat_id = message.chat.id
+        service = message.text
 
-        custom_values = api.get_custom_values(service, range_values, quantity)
+        msg = bot.reply_to(message, "Введите диапазон значений:")
+        bot.register_next_step_handler(msg, process_range_step, service)
+    except Exception as e:
+        bot.reply_to(message, f"Произошла ошибка: {str(e)}")
 
-        bot.reply_to(message, f"Пользовательские значения для {service} "
-                              f"в диапазоне {range_values}: {custom_values}")
+def process_range_step(message: Message, service):
+    try:
+        chat_id = message.chat.id
+        range_values = message.text
 
-        # Сохраняем запрос в историю
-        save_request_to_history(message.from_user.id, "/custom",
-                                f"{service}, {range_values}, {quantity}")
+        msg = bot.reply_to(message, "Введите количество:")
+        bot.register_next_step_handler(msg, process_quantity_step, service, range_values)
+    except Exception as e:
+        bot.reply_to(message, f"Произошла ошибка: {str(e)}")
+
+def process_quantity_step(message: Message, service, range_values):
+    try:
+        chat_id = message.chat.id
+        quantity = int(message.text)
+
+        # Дальнейшая обработка: запрос к API, отправка сообщения с результатом и т.д.
+
+        bot.reply_to(message, f"Вы запросили {quantity} значений в диапазоне {range_values} для {service}")
 
     except Exception as e:
         bot.reply_to(message, f"Произошла ошибка: {str(e)}")

@@ -1,34 +1,32 @@
 from telebot.types import Message
 from loader import bot
-from handlers import api
-import sqlite3
 
-def save_request_to_history(user_id, command, arguments):
-    conn = sqlite3.connect('history.db')
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO history (user_id, command, arguments) "
-                   "VALUES (?, ?, ?)", (user_id, command, arguments))
-    conn.commit()
-    conn.close()
+# Состояния для запроса аргументов
+ARGUMENT_SERVICE, ARGUMENT_QUANTITY = range(2)
 
 @bot.message_handler(commands=["low"])
 def low_command(message: Message):
+    msg = bot.reply_to(message, "Введите услугу/товар:")
+    bot.register_next_step_handler(msg, process_service_step)
+
+def process_service_step(message: Message):
     try:
-        args = message.text.split()[1:]
-        if len(args) != 2:
-            bot.reply_to(message, "Неверное количество аргументов. Используйте команду "
-                                  "/low <услуга/товар> <количество>")
-            return
-        service = args[0]
-        quantity = int(args[1])
+        chat_id = message.chat.id
+        service = message.text
 
-        lowest_values = api.get_lowest_values(service, quantity)
+        msg = bot.reply_to(message, "Введите количество:")
+        bot.register_next_step_handler(msg, process_quantity_step, service)
+    except Exception as e:
+        bot.reply_to(message, f"Произошла ошибка: {str(e)}")
 
-        bot.reply_to(message, f"Самые низкие значения для {service}: {lowest_values}")
+def process_quantity_step(message: Message, service):
+    try:
+        chat_id = message.chat.id
+        quantity = int(message.text)
 
-        # Сохраняем запрос в историю
-        save_request_to_history(message.from_user.id, "/low",
-                                f"{service}, {quantity}")
+        # Дальнейшая обработка: запрос к API, отправка сообщения с результатом и т.д.
+
+        bot.reply_to(message, f"Вы запросили {quantity} минимальных значений для {service}")
 
     except Exception as e:
         bot.reply_to(message, f"Произошла ошибка: {str(e)}")
