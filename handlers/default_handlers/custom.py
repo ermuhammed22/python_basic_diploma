@@ -1,5 +1,6 @@
 from telebot.types import Message
 from loader import bot
+import api  # Импортируем модуль api, где определена функция get_custom_values
 
 # Состояния для запроса аргументов
 ARGUMENT_SERVICE, ARGUMENT_RANGE, ARGUMENT_QUANTITY = range(3)
@@ -34,7 +35,8 @@ def process_quantity_step(message: Message, service, range_values):
         chat_id = message.chat.id
         quantity = int(message.text)
 
-        # Дальнейшая обработка: запрос к API, отправка сообщения с результатом и т.д.
+        # Вызываем функцию API с передачей пользовательских данных
+        api.get_custom_values(service, range_values, quantity)
 
         bot.reply_to(message, f"Вы запросили {quantity} значений в диапазоне {range_values} для {service}")
 

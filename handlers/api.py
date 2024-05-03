@@ -39,4 +39,5 @@ class ExternalAPI:
         data = response.json()
         return data
 
+
 api = ExternalAPI(RAPID_API_KEY)
