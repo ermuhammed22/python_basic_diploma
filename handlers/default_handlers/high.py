@@ -1,13 +1,13 @@
 from telebot.types import Message
 from loader import bot
-import api  # Импортируем модуль api, где определена функция для запроса максимальных значений
+from api.api import api   # Импортируем модуль api, где определена функция get_highest_values
 
 # Состояния для запроса аргументов
 ARGUMENT_SERVICE, ARGUMENT_QUANTITY = range(2)
 
 @bot.message_handler(commands=["high"])
 def high_command(message: Message):
-    msg = bot.reply_to(message, "Введите услугу/товар:")
+    msg = bot.reply_to(message, "Введите услугу/товар, по которым будет проводиться поиск:")
     bot.register_next_step_handler(msg, process_service_step)
 
 def process_service_step(message: Message):

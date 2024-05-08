@@ -6,7 +6,7 @@ class ExternalAPI:
         self.api_key = api_key
 
     def get_lowest_values(self, service, quantity):
-        url = "https://www.wildberries.ru"
+        url = "https://aliexpress-datahub.p.rapidapi.com"
         params = {
             "service": service,
             "quantity": quantity,
@@ -17,7 +17,7 @@ class ExternalAPI:
         return data
 
     def get_highest_values(self, service, quantity):
-        url = "https://www.wildberries.ru"
+        url = "https://aliexpress-datahub.p.rapidapi.com"
         params = {
             "service": service,
             "quantity": quantity,
@@ -28,7 +28,7 @@ class ExternalAPI:
         return data
 
     def get_custom_values(self, service, range_values, quantity):
-        url = "https://www.wildberries.ru"
+        url = "https://aliexpress-datahub.p.rapidapi.com"
         params = {
             "service": service,
             "range_values": range_values,
