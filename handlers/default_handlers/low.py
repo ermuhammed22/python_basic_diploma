@@ -1,3 +1,5 @@
+import sqlite3
+
 from telebot.types import Message
 from loader import bot
 from api.api import api   # Импортируем модуль api, где определена функция get_lowest_values
@@ -26,9 +28,15 @@ def process_quantity_step(message: Message, service):
         quantity = int(message.text)
 
         # Вызываем функцию API с передачей пользовательских данных
-        api.get_lowest_values(service, quantity)
+        data = api.get_lowest_values(service, quantity)
+        conn = sqlite3.connect('history.db')
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO history (user_id, command, arguments) VALUES (?, ?, ?)",
+                       (message.from_user.id, "/low", f"{service}, {quantity}"))
+        conn.commit()
+        conn.close()
 
-        bot.reply_to(message, f"Вы запросили {quantity} минимальных значений для {service}")
+        bot.reply_to(message, str(data))
 
     except Exception as e:
         bot.reply_to(message, f"Произошла ошибка: {str(e)}")

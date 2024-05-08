@@ -19,6 +19,13 @@ def create_history_table():
 # Запускаем функцию создания таблицы перед использованием
 create_history_table()
 
+def insert_user_history(user_id, command, arguments):
+    conn = sqlite3.connect('history.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO history (user_id, command, arguments) VALUES (?, ?, ?)", (user_id, command, arguments))
+    conn.commit()
+    conn.close()
+
 def get_user_history(user_id):
     conn = sqlite3.connect('history.db')
     cursor = conn.cursor()
@@ -45,3 +52,6 @@ def history_command(message: Message):
 
     except Exception as e:
         bot.reply_to(message, f"Произошла ошибка: {str(e)}")
+
+    # Ответил на команду, добавляем запись в историю
+    insert_user_history(user_id, "history", None)

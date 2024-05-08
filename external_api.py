@@ -1,4 +1,6 @@
 import requests
+from pip._vendor.rich import json
+
 from config_data.config import RAPID_API_KEY
 
 class ExternalAPI:
@@ -6,7 +8,7 @@ class ExternalAPI:
         self.api_key = api_key
 
     def get_lowest_values(self, service, quantity):
-        url = "https://aliexpress-datahub.p.rapidapi.com"
+        url = "https://aliexpress-datahub.p.rapidapi.com/item_search_5"
         params = {
             "service": service,
             "quantity": quantity,
@@ -17,7 +19,7 @@ class ExternalAPI:
         return data
 
     def get_highest_values(self, service, quantity):
-        url = "https://aliexpress-datahub.p.rapidapi.com"
+        url = "https://aliexpress-datahub.p.rapidapi.com/item_search_5"
         params = {
             "service": service,
             "quantity": quantity,
@@ -28,7 +30,7 @@ class ExternalAPI:
         return data
 
     def get_custom_values(self, service, range_values, quantity):
-        url = "https://aliexpress-datahub.p.rapidapi.com"
+        url = "https://aliexpress-datahub.p.rapidapi.com/item_search_5"
         params = {
             "service": service,
             "range_values": range_values,
