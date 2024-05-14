@@ -36,7 +36,7 @@
 Пример ответа запроса:
 
 ```console
-Максимальная температура в городе Moscow сегодня: -3°C"
+Максимальная температура в городе Moscow сегодня: 8°C"
 ```
 
 **/custom** - выводит полную информацию о погоде в указанном городе.
@@ -59,6 +59,21 @@
 Скорость ветра: 4.12 м/с
 ```
 
+**/history ** - показывает последние 10 запросов пользователя.
+
+Пример использования:
+
+```bash
+/history
+```
+
+Пример ответа запроса:
+
+```console
+История ваших запросов:
+1. Команда: /custom, Аргументы: Moscow
+2. Команда: /high, Аргументы: Moscow
+```
 
 #### default command:
 
@@ -89,6 +104,73 @@ nano .env  # заполните необходимые переменные
 pip install -r requirements.txt
 python main.py
 ```
+
+### Структура проекта
+
+project/
+│
+├── api/
+│   └── api.py
+│
+├── config_data/
+│   ├── __init__.py
+│   └── config.py
+│
+├── database/
+│   └── database.py
+│
+├── handlers/
+│   ├── __init__.py
+│   ├── default_handlers/
+│   │   ├── __init__.py
+│   │   ├── custom.py
+│   │   ├── echo.py
+│   │   ├── help.py
+│   │   ├── high.py
+│   │   ├── history.py
+│   │   └── low.py
+│   └── custom_handlers/
+│       └── (other custom handlers)
+│
+├── keyboards/
+│   ├── __init__.py
+│   ├── reply.py
+│   └── inline.py
+│
+├── utils/
+│   ├── __init__.py
+│   ├── misc.py
+│   └── set_bot_commands.py
+│
+├── loader.py
+├── main.py
+├── .env
+├── .env.template
+└── requirements.txt
+
+### Функции работы с базой данных
+
+Модуль database/database.py содержит функции для работы с базой данных:
+
+    create_history_table() - Создание таблицы истории запросов.
+    insert_user_history(user_id, command, arguments) - Вставка новой записи в таблицу истории.
+    get_user_history(user_id) - Получение истории запросов пользователя.
+    log_command(user_id, command, arguments=None) - Запись команды в историю.
+
+Пример использования:
+
+from database.database import create_history_table, log_command, get_user_history
+
+# Создание таблицы истории
+create_history_table()
+
+# Запись команды в историю
+log_command(user_id=123, command='/custom', arguments='Moscow')
+
+# Получение истории запросов
+history = get_user_history(user_id=123)
+print(history)
+
 
 После запуска проекта в Telegram можно начать использовать бота, 
 выполняя указанные команды.

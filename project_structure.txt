@@ -1,10 +1,15 @@
 project/
+│
 ├── api/
-│   ├── __init__.py
 │   └── api.py
+│
 ├── config_data/
 │   ├── __init__.py
 │   └── config.py
+│
+├── database/
+│   └── database.py
+│
 ├── handlers/
 │   ├── __init__.py
 │   ├── default_handlers/
@@ -14,21 +19,22 @@ project/
 │   │   ├── help.py
 │   │   ├── high.py
 │   │   ├── history.py
-│   │   ├── low.py
-│   │   └── start.py
+│   │   └── low.py
 │   └── custom_handlers/
-│       └── __init__.py
+│       └── (other custom handlers)
+│
 ├── keyboards/
 │   ├── __init__.py
 │   ├── reply.py
 │   └── inline.py
+│
 ├── utils/
 │   ├── __init__.py
 │   ├── misc.py
 │   └── set_bot_commands.py
-├── .env
-├── .env.template
+│
 ├── loader.py
 ├── main.py
-├── external_api.py
-└── README.md
+├── .env
+├── .env.template
+└── requirements.txt

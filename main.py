@@ -1,7 +1,7 @@
 from loader import bot
 import handlers
 from utils.set_bot_commands import set_default_commands
-from external_api import api
+from api.api import api  # Импортируем api из пакета api
 
 if __name__ == "__main__":
     set_default_commands(bot)

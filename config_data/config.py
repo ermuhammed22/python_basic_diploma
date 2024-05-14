@@ -8,6 +8,8 @@ else:
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 RAPID_API_KEY = os.getenv("RAPID_API_KEY")
+API_URL = "http://api.openweathermap.org/data/2.5/weather"
+
 DEFAULT_COMMANDS = (
     ('start', 'Начать работу с ботом'),
     ('help', 'Получить помощь'),
