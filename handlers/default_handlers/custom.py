@@ -1,52 +1,49 @@
 import sqlite3
-
 from telebot.types import Message
 from loader import bot
-from api.api import api   # Импортируем модуль api, где определена функция get_custom_values
+from api.api import api  # Импортируем модуль api, где определена функция get_weather
 
-# Состояния для запроса аргументов
-ARGUMENT_SERVICE, ARGUMENT_RANGE, ARGUMENT_QUANTITY = range(3)
 
 @bot.message_handler(commands=["custom"])
 def custom_command(message: Message):
-    msg = bot.reply_to(message, "Введите услугу/товар, по которым будет проводиться поиск:")
-    bot.register_next_step_handler(msg, process_service_step)
+    msg = bot.reply_to(message, "Введите название города для получения полной информации о погоде:")
+    bot.register_next_step_handler(msg, process_city_step)
 
-def process_service_step(message: Message):
+
+def process_city_step(message: Message):
     try:
-        chat_id = message.chat.id
-        service = message.text
+        city_name = message.text
 
-        msg = bot.reply_to(message, "Введите диапазон значений:")
-        bot.register_next_step_handler(msg, process_range_step, service)
-    except Exception as e:
-        bot.reply_to(message, f"Произошла ошибка: {str(e)}")
-
-def process_range_step(message: Message, service):
-    try:
-        chat_id = message.chat.id
-        range_values = message.text
-
-        msg = bot.reply_to(message, "Введите количество:")
-        bot.register_next_step_handler(msg, process_quantity_step, service, range_values)
-    except Exception as e:
-        bot.reply_to(message, f"Произошла ошибка: {str(e)}")
-
-def process_quantity_step(message: Message, service, range_values):
-    try:
-        chat_id = message.chat.id
-        quantity = int(message.text)
-
-        # Вызываем функцию API с передачей пользовательских данных
-        data = api.get_custom_values(service, range_values, quantity)
+        # Вызываем функцию API для получения данных о погоде
+        data = api.get_weather(city_name)
         conn = sqlite3.connect('history.db')
         cursor = conn.cursor()
         cursor.execute("INSERT INTO history (user_id, command, arguments) VALUES (?, ?, ?)",
-                       (message.from_user.id, "/custom", f"{service}, {quantity}"))
+                       (message.from_user.id, "/custom", city_name))
         conn.commit()
         conn.close()
 
-        bot.reply_to(message, str(data))
+        if data.get("cod") != 200:
+            bot.reply_to(message, f"Произошла ошибка: {data.get('message', 'Неизвестная ошибка')}")
+            return
+
+        weather_description = data['weather'][0]['description']
+        temp = data['main']['temp']
+        feels_like = data['main']['feels_like']
+        humidity = data['main']['humidity']
+        wind_speed = data['wind']['speed']
+        temp_min = data['main']['temp_min']
+        temp_max = data['main']['temp_max']
+
+        response_message = (f"Погода в городе {city_name} сегодня:\n"
+                            f"Описание: {weather_description}\n"
+                            f"Температура сейчас: {temp}°C (Ощущается как {feels_like}°C)\n"
+                            f"Минимальная температура: {temp_min}°C\n"
+                            f"Максимальная температура: {temp_max}°C\n"
+                            f"Влажность: {humidity}%\n"
+                            f"Скорость ветра: {wind_speed} м/с")
+
+        bot.reply_to(message, response_message)
 
     except Exception as e:
         bot.reply_to(message, f"Произошла ошибка: {str(e)}")
